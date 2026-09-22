@@ -44,9 +44,9 @@ def home():
             <td>{c["problema"]}</td>
 
             <td>{c["prioridade"]}</td>
-            <td>{c["data_abertura"]}</td>
 
             <td>
+
                 <select
                     class="status-select {c['status'].lower().replace(' ', '-')}"
                     onchange="alterarStatus({c['id']}, this.value)"
@@ -65,6 +65,20 @@ def home():
                     </option>
 
                 </select>
+
+            </td>
+
+            <td>{c["data_abertura"]}</td>
+
+            <td>
+
+                <button
+                    class="btn-excluir"
+                    onclick="excluirChamado({c['id']})"
+                >
+                    Excluir
+                </button>
+
             </td>
 
         </tr>
@@ -144,6 +158,14 @@ def home():
                 background: #1d4ed8;
             }}
 
+            .btn-excluir {{
+                background: #dc2626;
+            }}
+
+            .btn-excluir:hover {{
+                background: #b91c1c;
+            }}
+
             .tabela {{
                 overflow-x: auto;
             }}
@@ -172,6 +194,7 @@ def home():
     <body>
 
         <h1>HelpDesk TI</h1>
+
 
         <div class="card">
 
@@ -242,27 +265,25 @@ def home():
 
             </select>
 
+
             <div class="tabela">
 
-            <table>
+                <table>
 
-    <tr>
-        <th>ID</th>
-        <th>Usuário</th>
-        <th>Equipamento</th>
-        <th>Problema</th>
-        <th>Prioridade</th>
-        <th>Status</th>
-        <th>Data de abertura</th>
-    </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuário</th>
+                        <th>Equipamento</th>
+                        <th>Problema</th>
+                        <th>Prioridade</th>
+                        <th>Status</th>
+                        <th>Data de abertura</th>
+                        <th>Ação</th>
+                    </tr>
 
-    {linhas}
+                    {linhas}
 
-</table>   
-
-                
-
-                
+                </table>
 
             </div>
 
@@ -277,12 +298,23 @@ def home():
 
                 dados.append("status", status);
 
-                await fetch(`/chamados/${{id}}`, {{
-                    method: "PUT",
-                    body: dados
-                }});
+                const resposta = await fetch(
+                    `/chamados/${{id}}`,
+                    {{
+                        method: "PUT",
+                        body: dados
+                    }}
+                );
 
-                window.location.href = "/";
+                if (resposta.ok) {{
+
+                    window.location.href = "/";
+
+                }} else {{
+
+                    alert("Erro ao alterar o status.");
+
+                }}
 
             }}
 
@@ -294,7 +326,9 @@ def home():
                 );
 
                 if (!confirmar) {{
+
                     return;
+
                 }}
 
                 const resposta = await fetch(
